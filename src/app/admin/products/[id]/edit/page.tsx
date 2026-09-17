@@ -1,0 +1,1 @@
+import ProductForm from "@/components/product-form";export default async function Page({params}:{params:Promise<{id:string}>}){return <main className="min-h-screen bg-[#f4f5f1] p-5 md:p-10"><ProductForm id={(await params).id}/></main>}
