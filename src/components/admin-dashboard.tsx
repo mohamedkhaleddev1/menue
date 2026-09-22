@@ -295,7 +295,9 @@ function Items({
   setItems: (v: MenuItem[]) => void;
   open: () => void;
 }) {
+  const router = useRouter();
   const [q, setQ] = useState("");
+  const [itemError, setItemError] = useState("");
   const toggle = async (p: MenuItem) => {
     const next = { ...p, available: !p.available };
     setItems(items.map((i) => (i._id === p._id ? next : i)));
@@ -307,8 +309,20 @@ function Items({
   };
   const del = async (p: MenuItem) => {
     if (!confirm(`Delete ${p.name}?`)) return;
+    setItemError("");
+    const response = await fetch(`/api/items/${p._id}`, {
+      method: "DELETE",
+    }).catch(() => null);
+    if (response?.status === 401) {
+      router.push("/admin/login");
+      return;
+    }
+    if (!response?.ok) {
+      const result = await response?.json().catch(() => null);
+      setItemError(result?.error || "Unable to delete this item.");
+      return;
+    }
     setItems(items.filter((i) => i._id !== p._id));
-    await fetch(`/api/items/${p._id}`, { method: "DELETE" }).catch(() => {});
   };
   return (
     <section>
@@ -330,6 +344,11 @@ function Items({
           Add menu item
         </button>
       </div>
+      {itemError && (
+        <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+          {itemError}
+        </p>
+      )}
       <div className="mt-5 overflow-hidden rounded-2xl bg-white">
         <div className="hidden grid-cols-[1fr_150px_120px_160px] gap-4 border-b p-4 text-xs font-bold uppercase tracking-wide text-[#8a918c] md:grid">
           <span>Item</span>
