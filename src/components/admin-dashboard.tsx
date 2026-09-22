@@ -773,12 +773,16 @@ function ItemModal({
             <span className="field-label">Description</span>
             <textarea
               required
+              minLength={5}
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
               className="input min-h-24"
             />
+            <span className="mt-1 block text-xs text-[#7b847d]">
+              At least 5 characters.
+            </span>
           </label>
           <label>
             <span className="field-label">Category</span>

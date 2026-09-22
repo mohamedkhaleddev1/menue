@@ -28,7 +28,9 @@ const itemObjectSchema = z.object({
   nameAr: z.string().optional().default(""),
   slug: z.string().regex(/^[a-z0-9-]+$/),
   shortDescription: z.string().max(180).optional().default(""),
-  description: z.string().min(5),
+  description: z
+    .string()
+    .min(5, "Description must be at least 5 characters"),
   descriptionAr: z.string().optional().default(""),
   price: z.coerce.number().min(0),
   discountPrice: z.coerce.number().min(0).optional().nullable(),

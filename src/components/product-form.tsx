@@ -363,6 +363,7 @@ function Area({
       <textarea
         dir={dir}
         required={!label.includes("Arabic")}
+        minLength={label === "Full description" ? 5 : undefined}
         className="input min-h-28"
         value={String(value ?? "")}
         onChange={(e) => set(e.target.value)}
