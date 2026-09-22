@@ -67,10 +67,9 @@ export default function ImageUploader({
           return applyLocalPreview(file);
         const response = await signatureResponse.json().catch(() => null);
         throw new Error(
-          response?.error ||
-            (signatureResponse.status === 401
-              ? "Your admin session expired. Sign in again and retry."
-              : "Unable to authorize this upload."),
+          signatureResponse.status === 401
+            ? "Your admin session expired. Sign in again, then retry the upload."
+            : response?.error || "Unable to authorize this upload.",
         );
       }
       const signed = await signatureResponse.json();

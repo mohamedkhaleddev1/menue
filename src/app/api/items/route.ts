@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { connectDB } from "@/lib/db";
 import MenuItem from "@/models/MenuItem";
+import "@/models/Category";
 import { itemSchema } from "@/lib/validation";
 import { apiError } from "@/lib/api";
 import { devStore, populateItem } from "@/lib/dev-store";
