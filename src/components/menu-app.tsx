@@ -268,7 +268,7 @@ function ProductCard({
           {p.customBadges?.map((label) => (
             <Badge key={label}>{label.toUpperCase()}</Badge>
           ))}
-          {p.discountPrice && <Badge gold>SALE</Badge>}
+          {p.discountPrice != null && <Badge gold>SALE</Badge>}
           {!p.available && <Badge dark>SOLD OUT</Badge>}
         </div>
       </div>
@@ -281,7 +281,7 @@ function ProductCard({
           {p.description}
         </p>
         <div className="mt-4 flex items-baseline gap-2">
-          {p.discountPrice ? (
+          {p.discountPrice != null ? (
             <>
               <span className="text-lg font-bold text-[#b64b38]">
                 {money(p.discountPrice, currency)}

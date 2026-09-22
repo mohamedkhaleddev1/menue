@@ -45,7 +45,7 @@ const itemObjectSchema = z.object({
   order: z.coerce.number().int().min(0).default(0),
 });
 export const itemSchema = itemObjectSchema.refine(
-  (v) => !v.discountPrice || v.discountPrice < v.price,
+  (v) => v.discountPrice == null || v.discountPrice < v.price,
   {
     message: "Discount price must be lower than the regular price",
     path: ["discountPrice"],

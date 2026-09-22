@@ -196,12 +196,19 @@ export default function ProductForm({ id }: { id?: string }) {
                 label="Price"
                 value={form.price}
                 set={(v) => set("price", Number(v))}
+                min={0}
+                step="0.01"
               />
               <Field
                 type="number"
                 label="Discount price"
                 value={form.discountPrice}
                 set={(v) => set("discountPrice", v ? Number(v) : undefined)}
+                min={0}
+                max={
+                  Number(form.price) > 0 ? Number(form.price) - 0.01 : undefined
+                }
+                step="0.01"
               />
               <div>
                 <p className="mb-3 font-bold">Sizes</p>
@@ -305,12 +312,18 @@ function Field({
   set,
   type = "text",
   dir,
+  min,
+  max,
+  step,
 }: {
   label: string;
   value: unknown;
   set: (v: string) => void;
   type?: string;
   dir?: "rtl";
+  min?: number;
+  max?: number;
+  step?: string;
 }) {
   return (
     <label className="block">
@@ -324,6 +337,9 @@ function Field({
         }
         className="input"
         type={type}
+        min={min}
+        max={max}
+        step={step}
         value={String(value ?? "")}
         onChange={(e) => set(e.target.value)}
       />

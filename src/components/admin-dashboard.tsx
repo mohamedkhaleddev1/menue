@@ -352,9 +352,22 @@ function Items({
                 />
                 <div>
                   <p className="font-semibold">{p.name}</p>
-                  <p className="text-sm text-[#89908b]">
-                    {p.discountPrice || p.price} EGP
-                  </p>
+                  <div className="flex items-baseline gap-2 text-sm">
+                    <span
+                      className={
+                        p.discountPrice != null
+                          ? "font-semibold text-[#b64b38]"
+                          : "text-[#89908b]"
+                      }
+                    >
+                      {p.discountPrice ?? p.price} EGP
+                    </span>
+                    {p.discountPrice != null && (
+                      <span className="text-xs text-[#a0a6a1] line-through">
+                        {p.price} EGP
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <p className="text-sm text-[#667068]">
@@ -563,6 +576,7 @@ function ItemModal({
       name: "",
       description: "",
       price: 0,
+      discountPrice: undefined as number | undefined,
       image: "",
       category: cats[0]?._id || "",
       sizes: [] as Option[],
@@ -714,6 +728,28 @@ function ItemModal({
             value={String(form.price)}
             change={(v) => setForm({ ...form, price: Number(v) })}
           />
+          <label>
+            <span className="field-label">Discount price (EGP)</span>
+            <input
+              type="number"
+              min="0"
+              max={form.price > 0 ? form.price - 0.01 : undefined}
+              step="0.01"
+              value={form.discountPrice ?? ""}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  discountPrice:
+                    e.target.value === "" ? undefined : Number(e.target.value),
+                })
+              }
+              className="input"
+              placeholder="Leave empty for no discount"
+            />
+            <span className="mt-1 block text-xs text-[#7b847d]">
+              Must be lower than the regular price.
+            </span>
+          </label>
           <label className="sm:col-span-2">
             <span className="field-label">Description</span>
             <textarea
