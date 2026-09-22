@@ -65,13 +65,19 @@ export default function ImageUploader({
       if (!signatureResponse.ok) {
         if (process.env.NODE_ENV === "development")
           return applyLocalPreview(file);
-        throw new Error();
+        const response = await signatureResponse.json().catch(() => null);
+        throw new Error(
+          response?.error ||
+            (signatureResponse.status === 401
+              ? "Your admin session expired. Sign in again and retry."
+              : "Unable to authorize this upload."),
+        );
       }
       const signed = await signatureResponse.json();
       if (!signed.cloudName || !signed.apiKey || !signed.signature) {
         if (process.env.NODE_ENV === "development")
           return applyLocalPreview(file);
-        throw new Error();
+        throw new Error("Image storage is not configured correctly.");
       }
       const data = new FormData();
       data.append("file", file);
@@ -80,18 +86,26 @@ export default function ImageUploader({
       data.append("signature", signed.signature);
       data.append("folder", signed.folder);
       setProgress(45);
-      const result = await fetch(
+      const cloudinaryResponse = await fetch(
         `https://api.cloudinary.com/v1_1/${signed.cloudName}/image/upload`,
         { method: "POST", body: data },
-      ).then((r) => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      });
+      );
+      const result = await cloudinaryResponse.json().catch(() => null);
+      if (!cloudinaryResponse.ok)
+        throw new Error(
+          result?.error?.message || "Cloudinary rejected this image.",
+        );
+      if (!result?.secure_url)
+        throw new Error("The upload completed without an image URL.");
       setProgress(100);
       onChange(result.secure_url);
       setTimeout(() => setProgress(0), 800);
-    } catch {
-      setError("Unable to upload image. Please try again.");
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error && uploadError.message
+          ? uploadError.message
+          : "Unable to upload image. Please try again.",
+      );
       setProgress(0);
     }
   }
@@ -192,7 +206,11 @@ export default function ImageUploader({
         hidden
         type="file"
         accept="image/jpeg,image/png,image/webp,image/avif"
-        onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (file) upload(file);
+        }}
       />
       {progress > 0 && progress < 100 && (
         <div className="mt-2 flex items-center gap-2 text-xs">
